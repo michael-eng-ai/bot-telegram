@@ -1,11 +1,22 @@
 import os
+import logging
 
-from dotenv import load_dotenv
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-load_dotenv()
+# Tenta carregar .env local (no Railway nao existe, e ok)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY")
+
+# Debug: mostra quais vars estao presentes (sem mostrar valores)
+logger.info(f"TELEGRAM_BOT_TOKEN presente: {bool(TELEGRAM_BOT_TOKEN)}")
+logger.info(f"DEEPSEEK_API_KEY presente: {bool(DEEPSEEK_API_KEY)}")
 
 # DeepSeek
 DEFAULT_MODEL = "deepseek-chat"
