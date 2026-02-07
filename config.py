@@ -11,16 +11,18 @@ except ImportError:
     pass
 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-DEEPSEEK_API_KEY = os.environ.get("DS_API_KEY")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
+# Railway limita variaveis custom — DS key pode vir junto com GEMINI separada por |
+_gemini_raw = os.environ.get("GEMINI_API_KEY", "")
+if "|" in _gemini_raw:
+    GEMINI_API_KEY, DEEPSEEK_API_KEY = _gemini_raw.split("|", 1)
+else:
+    GEMINI_API_KEY = _gemini_raw or None
+    DEEPSEEK_API_KEY = os.environ.get("DS_API_KEY")
 
 logger.info(f"TELEGRAM_BOT_TOKEN presente: {bool(TELEGRAM_BOT_TOKEN)}")
-logger.info(f"DS_API_KEY presente: {bool(DEEPSEEK_API_KEY)}")
+logger.info(f"DEEPSEEK_API_KEY presente: {bool(DEEPSEEK_API_KEY)}")
 logger.info(f"GEMINI_API_KEY presente: {bool(GEMINI_API_KEY)}")
-
-# Debug: listar todas as variaveis de ambiente (so nomes, sem valores)
-env_names = sorted(os.environ.keys())
-logger.info(f"Todas as env vars ({len(env_names)}): {env_names}")
 
 # DeepSeek (texto)
 DEFAULT_MODEL = "deepseek-chat"
