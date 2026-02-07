@@ -20,12 +20,11 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     settings = await database.get_user_settings(user.id)
 
     try:
-        response_text = await ai_client.ask_ai_vision(
+        response_text = await ai_client.ask_vision(
             prompt=caption,
             image_bytes=bytes(image_bytes),
             mime_type="image/jpeg",
             system_prompt=settings["system_prompt"],
-            model=settings["ai_model"],
         )
     except Exception as e:
         await update.message.reply_text(f"Erro ao analisar imagem: {e}")
@@ -44,15 +43,25 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
     file = await context.bot.get_file(voice.file_id)
     audio_bytes = await file.download_as_bytearray()
+    mime_type = voice.mime_type or "audio/ogg"
 
     await database.upsert_user(user.id, user.username, user.first_name, user.language_code)
     settings = await database.get_user_settings(user.id)
 
-    # DeepSeek nao suporta audio nativo, transcrever nao e possivel
-    await update.message.reply_text(
-        "Desculpe, no momento nao consigo processar mensagens de audio. "
-        "Por favor, envie sua mensagem como texto."
-    )
+    try:
+        response_text = await ai_client.ask_audio(
+            prompt="Transcreva e responda esta mensagem de audio em portugues:",
+            audio_bytes=bytes(audio_bytes),
+            mime_type=mime_type,
+            system_prompt=settings["system_prompt"],
+        )
+    except Exception as e:
+        await update.message.reply_text(f"Erro ao processar audio: {e}")
+        return
+
+    await database.save_message(user.id, "user", "[Audio]", "audio")
+    await database.save_message(user.id, "model", response_text, "text")
+    await update.message.reply_text(response_text)
 
 
 async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -73,7 +82,7 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await database.upsert_user(user.id, user.username, user.first_name, user.language_code)
     settings = await database.get_user_settings(user.id)
 
-    text_mimes = {"text/plain", "text/csv", "text/html", "application/json", "application/pdf"}
+    text_mimes = {"text/plain", "text/csv", "text/html", "application/json"}
 
     try:
         if mime_type in text_mimes:
@@ -84,11 +93,28 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 model=settings["ai_model"],
             )
         else:
-            response_text = await ai_client.ask_ai(
-                prompt=f"{caption}\n\n(Arquivo binario: {doc.file_name}, tipo: {mime_type}, tamanho: {doc.file_size} bytes)",
-                system_prompt=settings["system_prompt"],
-                model=settings["ai_model"],
+            # Documentos binarios (PDF, etc) vao pro Gemini
+            from google.genai import types
+            from ai_client import _get_gemini
+            from config import GEMINI_MODEL, MAX_RESPONSE_TOKENS
+
+            response = await _get_gemini().aio.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=[
+                    types.Content(
+                        role="user",
+                        parts=[
+                            types.Part.from_text(text=caption),
+                            types.Part.from_bytes(data=bytes(file_bytes), mime_type=mime_type),
+                        ],
+                    )
+                ],
+                config=types.GenerateContentConfig(
+                    system_instruction=settings["system_prompt"],
+                    max_output_tokens=MAX_RESPONSE_TOKENS,
+                ),
             )
+            response_text = response.text
     except Exception as e:
         await update.message.reply_text(f"Erro ao analisar documento: {e}")
         return
