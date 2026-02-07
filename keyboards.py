@@ -24,8 +24,8 @@ def settings_keyboard() -> InlineKeyboardMarkup:
 
 def model_selection_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("Gemini 2.0 Flash (rapido)", callback_data="model_gemini-2.0-flash")],
-        [InlineKeyboardButton("Gemini 2.5 Flash (mais recente)", callback_data="model_gemini-2.5-flash-preview-04-17")],
+        [InlineKeyboardButton("DeepSeek V3.2 (rapido)", callback_data="model_deepseek-chat")],
+        [InlineKeyboardButton("DeepSeek R1 (raciocinio)", callback_data="model_deepseek-reasoner")],
         [InlineKeyboardButton("Voltar", callback_data="menu_settings")],
     ])
 

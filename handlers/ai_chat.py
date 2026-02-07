@@ -3,7 +3,7 @@ from telegram.constants import ChatAction
 from telegram.ext import ContextTypes
 
 import database
-import gemini_client
+import ai_client
 import keyboards
 
 
@@ -45,7 +45,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=ChatAction.TYPING)
 
     try:
-        response_text = await gemini_client.ask_gemini(
+        response_text = await ai_client.ask_ai(
             prompt=text,
             history=history,
             system_prompt=settings["system_prompt"],

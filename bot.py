@@ -33,8 +33,8 @@ async def post_init(app: Application) -> None:
 def main() -> None:
     if not config.TELEGRAM_BOT_TOKEN:
         raise RuntimeError("TELEGRAM_BOT_TOKEN nao encontrado. Configure no .env.")
-    if not config.GEMINI_API_KEY:
-        raise RuntimeError("GEMINI_API_KEY nao encontrado. Configure no .env.")
+    if not config.DEEPSEEK_API_KEY:
+        raise RuntimeError("DEEPSEEK_API_KEY nao encontrado. Configure no .env.")
 
     app = (
         Application.builder()

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     username      TEXT,
     first_name    TEXT,
     language_code TEXT DEFAULT 'pt',
-    ai_model      TEXT DEFAULT 'gemini-2.0-flash',
+    ai_model      TEXT DEFAULT 'deepseek-chat',
     system_prompt TEXT DEFAULT 'Voce e um assistente util e amigavel. Responda em portugues.',
     created_at    TEXT DEFAULT (datetime('now')),
     last_active   TEXT DEFAULT (datetime('now'))
@@ -70,7 +70,7 @@ async def get_user_settings(user_id: int) -> dict:
         row = await cursor.fetchone()
         if row:
             return {"ai_model": row["ai_model"], "system_prompt": row["system_prompt"]}
-        return {"ai_model": "gemini-2.0-flash", "system_prompt": "Voce e um assistente util e amigavel. Responda em portugues."}
+        return {"ai_model": "deepseek-chat", "system_prompt": "Voce e um assistente util e amigavel. Responda em portugues."}
 
 
 async def update_user_settings(user_id: int, **kwargs):
