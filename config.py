@@ -18,6 +18,10 @@ logger.info(f"TELEGRAM_BOT_TOKEN presente: {bool(TELEGRAM_BOT_TOKEN)}")
 logger.info(f"DS_API_KEY presente: {bool(DEEPSEEK_API_KEY)}")
 logger.info(f"GEMINI_API_KEY presente: {bool(GEMINI_API_KEY)}")
 
+# Debug: listar todas as variaveis de ambiente (so nomes, sem valores)
+env_names = sorted(os.environ.keys())
+logger.info(f"Todas as env vars ({len(env_names)}): {env_names}")
+
 # DeepSeek (texto)
 DEFAULT_MODEL = "deepseek-chat"
 DEFAULT_SYSTEM_PROMPT = "Voce e um assistente util e amigavel. Responda em portugues."

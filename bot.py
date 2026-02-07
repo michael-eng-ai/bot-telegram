@@ -34,7 +34,7 @@ def main() -> None:
     if not config.TELEGRAM_BOT_TOKEN:
         raise RuntimeError("TELEGRAM_BOT_TOKEN nao encontrado. Configure no .env.")
     if not config.DEEPSEEK_API_KEY:
-        raise RuntimeError("DEEPSEEK_API_KEY nao encontrado. Configure no .env.")
+        config.logger.warning("DS_API_KEY nao encontrado — chat de texto desabilitado.")
 
     app = (
         Application.builder()
