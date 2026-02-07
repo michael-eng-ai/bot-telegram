@@ -11,11 +11,11 @@ except ImportError:
     pass
 
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY")
+DEEPSEEK_API_KEY = os.environ.get("DS_API_KEY")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 logger.info(f"TELEGRAM_BOT_TOKEN presente: {bool(TELEGRAM_BOT_TOKEN)}")
-logger.info(f"DEEPSEEK_API_KEY presente: {bool(DEEPSEEK_API_KEY)}")
+logger.info(f"DS_API_KEY presente: {bool(DEEPSEEK_API_KEY)}")
 logger.info(f"GEMINI_API_KEY presente: {bool(GEMINI_API_KEY)}")
 
 # DeepSeek (texto)
