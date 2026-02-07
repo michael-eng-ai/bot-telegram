@@ -3,7 +3,16 @@ from google.genai import types
 
 from config import GEMINI_API_KEY, DEFAULT_MODEL, MAX_RESPONSE_TOKENS
 
-client = genai.Client(api_key=GEMINI_API_KEY)
+_client = None
+
+
+def _get_client() -> genai.Client:
+    global _client
+    if _client is None:
+        if not GEMINI_API_KEY:
+            raise RuntimeError("GEMINI_API_KEY nao configurado.")
+        _client = genai.Client(api_key=GEMINI_API_KEY)
+    return _client
 
 
 async def ask_gemini(
@@ -25,7 +34,7 @@ async def ask_gemini(
         types.Content(role="user", parts=[types.Part.from_text(text=prompt)])
     )
 
-    response = await client.aio.models.generate_content(
+    response = await _get_client().aio.models.generate_content(
         model=model,
         contents=contents,
         config=types.GenerateContentConfig(
@@ -44,7 +53,7 @@ async def ask_gemini_vision(
     system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
 ) -> str:
-    response = await client.aio.models.generate_content(
+    response = await _get_client().aio.models.generate_content(
         model=model,
         contents=[
             types.Content(
@@ -70,7 +79,7 @@ async def ask_gemini_audio(
     system_prompt: str | None = None,
     model: str = DEFAULT_MODEL,
 ) -> str:
-    response = await client.aio.models.generate_content(
+    response = await _get_client().aio.models.generate_content(
         model=model,
         contents=[
             types.Content(

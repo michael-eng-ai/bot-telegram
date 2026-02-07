@@ -95,10 +95,9 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 model=settings["ai_model"],
             )
         else:
-            from google import genai
+            from gemini_client import _get_client
             from google.genai import types
-            client = genai.Client(api_key=__import__("config").GEMINI_API_KEY)
-            response = await client.aio.models.generate_content(
+            response = await _get_client().aio.models.generate_content(
                 model=settings["ai_model"],
                 contents=[
                     types.Content(
